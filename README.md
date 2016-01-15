@@ -1,24 +1,16 @@
-# clojure-microservices
 
-FIXME
+[![Build Status](https://travis-ci.org/startupit69/clojure-microservices.svg?branch=master)](https://travis-ci.org/startupit69/clojure-microservices)
+
+# My Personal Webpack+ES6+React+... Learning Playground
 
 ## Getting Started
 
-1. Start the application: `lein run-dev` \*
-2. Go to [localhost:8080](http://localhost:8080/) to see: `Hello World!`
-3. Read your app's source code at src/clojure_microservices/service.clj. Explore the docs of functions
-   that define routes and responses.
-4. Run your app's tests with `lein test`. Read the tests at test/clojure_microservices/service_test.clj.
-5. Learn more! See the [Links section below](#links).
+```bash
+git clone https://github.com/startupit69/clojure-microservices.git
+cd clojure-microservices
+lein run-dev
+```
 
-\* `lein run-dev` automatically detects code changes. Alternatively, you can run in production mode
-with `lein run`.
+## License
 
-## Configuration
-
-To configure logging see config/logback.xml. By default, the app logs to stdout and logs/.
-To learn more about configuring Logback, read its [documentation](http://logback.qos.ch/documentation.html).
-
-## Links
-* [Other examples](https://github.com/pedestal/samples)
-
+MIT
