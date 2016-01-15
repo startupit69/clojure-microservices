@@ -4,3 +4,4 @@ logs/
 Clojure\ REPL
 .nrepl-port
 .lein-repl-history
+.lein-failures
