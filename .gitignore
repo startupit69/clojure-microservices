@@ -1,3 +1,6 @@
 target/
 tmp/
 logs/
+Clojure\ REPL
+.nrepl-port
+.lein-repl-history

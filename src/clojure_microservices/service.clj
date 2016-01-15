@@ -13,7 +13,50 @@
 
 (defn home-page
   [request]
+  (prn request)
   (ring-resp/response "Hello World!"))
+
+(def mock-books-collection
+   {
+     :pro-mongodb-development
+     {
+       :name "Pro MongoDB Development"
+       :author "Deepak Vohra"
+       :year "2015"
+       :publisher "APRESS"
+       :isbn "978-1-4842-1598-2"
+       :pages "301"
+     }
+     :data-structures-and-algorithms-with-javascript
+     {
+       :name "Data Structures and Algorithms with JavaScript"
+       :author "Michael McMillan"
+       :year "2014"
+       :publisher "OReilly"
+       :isbn "978-1-4493-6493-9"
+       :pages "246"
+     }
+  }
+)
+
+(defn get-books
+  [request]
+  (bootstrap/json-response mock-books-collection)
+)
+
+(defn add-book
+  [request]
+  (prn (:json-params request))
+      (ring-resp/created "http://fake-201-url" "fake 201 in the body")
+)
+
+(defn get-book
+  [request]
+  (let [bookname (get-in request [:path-params :book-name])]
+    (bootstrap/json-response ((keyword bookname) mock-books-collection))
+  )
+)
+
 
 (defroutes routes
   ;; Defines "/" and "/about" routes with their associated :get handlers.
@@ -21,6 +64,9 @@
   ;; apply to / and its children (/about).
   [[["/" {:get home-page}
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
+     ["/books" {:get get-books
+                :post add-book}]
+     ["/books/:book-name" {:get get-book}]
      ["/about" {:get about-page}]]]])
 
 ;; Consumed by clojure-microservices.server/create-server
