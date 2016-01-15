@@ -1,7 +1,7 @@
 
 [![Build Status](https://travis-ci.org/startupit69/clojure-microservices.svg?branch=master)](https://travis-ci.org/startupit69/clojure-microservices)
 
-# My Personal Webpack+ES6+React+... Learning Playground
+# My Personal Clojure Microservices Learning Playground
 
 ## Getting Started
 
