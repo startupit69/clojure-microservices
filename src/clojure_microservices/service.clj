@@ -3,6 +3,9 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.http.body-params :as body-params]
             [io.pedestal.http.route.definition :refer [defroutes]]
+            [monger.core :as mg]
+            [monger.collection :as mc]
+            [monger.json]
             [ring.util.response :as ring-resp]))
 
 (defn about-page
@@ -11,10 +14,15 @@
                               (clojure-version)
                               (route/url-for ::about-page))))
 
+;; MONGO_CONNECTION environment variable should be formed like this:
+;; mongodb://username:password@staff.mongohq.com:port/dbname
 (defn home-page
   [request]
-  (prn request)
-  (ring-resp/response "Hello World!"))
+    (let [uri (System/getenv "MONGO_CONNECTION")
+          {:keys [conn db]} (mg/connect-via-uri uri)]
+          (bootstrap/json-response
+            (mc/find-maps db "books-catalogue") ))
+)
 
 (def mock-books-collection
    {
@@ -41,19 +49,39 @@
 
 (defn get-books
   [request]
-  (bootstrap/json-response mock-books-collection)
+  (let [uri (System/getenv "MONGO_CONNECTION")
+        {:keys [conn db]} (mg/connect-via-uri uri)]
+        (bootstrap/json-response
+          (mc/find-maps db "books-catalogue") ))
 )
 
 (defn add-book
   [request]
-  (prn (:json-params request))
-      (ring-resp/created "http://fake-201-url" "fake 201 in the body")
+
+    (let [incoming (:json-params request)
+         connect-string (System/getenv "MONGO_CONNECTION")
+         {:keys [conn db]} (mg/connect-via-uri connect-string)]
+         (ring-resp/created
+           "http://my-created-resource-url"
+           (mc/insert-and-return db "books-catalogue" incoming)
+         )
+    )
+)
+
+(defn get-book-from-db
+  [book-id]
+  (let [uri (System/getenv "MONGO_CONNECTION")
+        {:keys [conn db]} (mg/connect-via-uri uri)]
+          (mc/find-maps db "books-catalogue" {:book-id book-id})
+  )
 )
 
 (defn get-book
   [request]
-  (let [bookname (get-in request [:path-params :book-name])]
-    (bootstrap/json-response ((keyword bookname) mock-books-collection))
+  (bootstrap/json-response
+    (get-book-from-db
+      (get-in request [:path-params :book-id])
+    )
   )
 )
 
@@ -66,7 +94,7 @@
      ^:interceptors [(body-params/body-params) bootstrap/html-body]
      ["/books" {:get get-books
                 :post add-book}]
-     ["/books/:book-name" {:get get-book}]
+     ["/books/:book-id" {:get get-book}]
      ["/about" {:get about-page}]]]])
 
 ;; Consumed by clojure-microservices.server/create-server
